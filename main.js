@@ -28,6 +28,8 @@
 const WIDTH = 800;
 const HEIGHT = 600;
 
+const ACC = 2;
+
 $(function(){
 	var app = new PIXI.Application(WIDTH, HEIGHT, { antialias: true });
 	app.renderer.backgroundColor = 0xAAAAAA;
@@ -53,76 +55,7 @@ $(function(){
 
 	console.log(playerCircle);
 	// Keyboard Controls
-	var left = keyboard(KEY_LEFT),
-		right = keyboard(KEY_RIGHT),
-		up = keyboard(KEY_UP),
-		down = keyboard(KEY_DOWN);
-
-	left.press = function(){
-		if(playerCircle.acc.y != 0){
-			let diag = Math.sqrt(1/2);
-			playerCircle.acc.y *= diag;
-			playerCircle.acc.x = -diag;
-		}else{
-			playerCircle.acc.x = -1;
-		}
-	};
-	right.press = function(){
-		if(playerCircle.acc.y != 0){
-			let diag = Math.sqrt(1/2);
-			playerCircle.acc.y *= diag;
-			playerCircle.acc.x = diag;
-		}else{
-			playerCircle.acc.x = 1;
-		}
-	};
-	up.press = function(){
-		if(playerCircle.acc.x != 0){
-			let diag = Math.sqrt(1/2);
-			playerCircle.acc.x *= diag;
-			playerCircle.acc.y = -diag;
-		}else{
-			playerCircle.acc.y = -1;
-		}
-	};
-	down.press = function(){
-		if(playerCircle.acc.x != 0){
-			let diag = Math.sqrt(1/2);
-			playerCircle.acc.x *= diag;
-			playerCircle.acc.y = diag;
-		}else{
-			playerCircle.acc.y = 1;
-		}
-	};
-
-	left.release = function(){
-		if(!right.isDown){
-			playerCircle.acc.x = 0;
-			let sign = (playerCircle.acc.y > 0) ? 1 : -1;
-			playerCircle.acc.y /= playerCircle.acc.y !== 0 ? (playerCircle.acc.y * sign) : 1;
-		}
-	}
-	right.release = function(){
-		if(!left.isDown){
-			playerCircle.acc.x = 0;
-			let sign = (playerCircle.acc.y > 0) ? 1 : -1;
-			playerCircle.acc.y /= playerCircle.acc.y !== 0 ? (playerCircle.acc.y * sign) : 1;
-		}
-	}
-	up.release = function(){
-		if(!down.isDown){
-			playerCircle.acc.y = 0;
-			let sign = (playerCircle.acc.x > 0) ? 1 : -1;
-			playerCircle.acc.x /= playerCircle.acc.x !== 0 ? (playerCircle.acc.x * sign) : 1;
-		}
-	}
-	down.release = function(){
-		if(!up.isDown){
-			playerCircle.acc.y = 0;
-			let sign = (playerCircle.acc.x > 0) ? 1 : -1;
-			playerCircle.acc.x /= playerCircle.acc.x !== 0 ? (playerCircle.acc.x * sign) : 1;
-		}
-	}
+	setupKeyboardControls();
 
 	var speedParams = new PIXI.Text("Acc: (" + playerCircle.acc.x.toFixed(2) + ", " + playerCircle.acc.y.toFixed(2) + "); Vel: (" + playerCircle.vel.x.toFixed(2) + ", " + playerCircle.vel.y.toFixed(2) + ")");
 	console.log(speedParams);
@@ -133,6 +66,93 @@ $(function(){
 	app.ticker.add(function(){
 		updateBoidLogic([playerCircle]);
 		renderBoid([playerCircle]);
-		speedParams.text = "Acc: (" + playerCircle.acc.x.toFixed(2) + ", " + playerCircle.acc.y.toFixed(2) + "); Vel: (" + playerCircle.vel.x.toFixed(2) + ", " + playerCircle.vel.y.toFixed(2) + ")";
+		speedParams.text = "Coord: (" + playerCircle.x.toFixed(2) +", " + playerCircle.y.toFixed(2) +"); Acc: (" + playerCircle.acc.x.toFixed(2) + ", " + playerCircle.acc.y.toFixed(2) + "); Vel: (" + playerCircle.vel.x.toFixed(2) + ", " + playerCircle.vel.y.toFixed(2) + ")";
+		// console.log(playerCircle);
 	});
+
+	function setupKeyboardControls(){
+	var left = keyboard(KEY_LEFT),
+		right = keyboard(KEY_RIGHT),
+		up = keyboard(KEY_UP),
+		down = keyboard(KEY_DOWN);
+
+	left.press = function(){
+		if(playerCircle.acc.y != 0){
+			let diag = Math.sqrt(ACC/2);
+			playerCircle.acc.y *= diag;
+			playerCircle.acc.x = -diag;
+		}else{
+			playerCircle.acc.x = -ACC;
+		}
+	};
+	right.press = function(){
+		if(playerCircle.acc.y != 0){
+			let diag = Math.sqrt(ACC/2);
+			playerCircle.acc.y *= diag;
+			playerCircle.acc.x = diag;
+		}else{
+			playerCircle.acc.x = ACC;
+		}
+	};
+	up.press = function(){
+		if(playerCircle.acc.x != 0){
+			let diag = Math.sqrt(ACC/2);
+			playerCircle.acc.x *= diag;
+			playerCircle.acc.y = -diag;
+		}else{
+			playerCircle.acc.y = -ACC;
+		}
+	};
+	down.press = function(){
+		if(playerCircle.acc.x != 0){
+			let diag = Math.sqrt(ACC/2);
+			playerCircle.acc.x *= diag;
+			playerCircle.acc.y = diag;
+		}else{
+			playerCircle.acc.y = ACC;
+		}
+	};
+
+	left.release = function(){
+		if(!right.isDown){
+			playerCircle.acc.x = 0;
+			let sign = (playerCircle.acc.y > 0) ? 1 : -1;
+			playerCircle.acc.y /= playerCircle.acc.y !== 0 ? (playerCircle.acc.y * sign) : 1;
+			playerCircle.acc.y *= ACC;
+		}else{
+			playerCircle.acc.x = -ACC;
+		}
+	};
+	right.release = function(){
+		if(!left.isDown){
+			playerCircle.acc.x = 0;
+			let sign = (playerCircle.acc.y > 0) ? 1 : -1;
+			playerCircle.acc.y /= playerCircle.acc.y !== 0 ? (playerCircle.acc.y * sign) : 1;
+			playerCircle.acc.y *= ACC;
+		}else{
+			playerCircle.acc.x = ACC;
+		}
+	};
+	up.release = function(){
+		if(!down.isDown){
+			playerCircle.acc.y = 0;
+			let sign = (playerCircle.acc.x > 0) ? 1 : -1;
+			playerCircle.acc.x /= playerCircle.acc.x !== 0 ? (playerCircle.acc.x * sign) : 1;
+			playerCircle.acc.x *= ACC;
+		}else{
+			playerCircle.acc.y = -ACC;
+		}
+	};
+	down.release = function(){
+		if(!up.isDown){
+			playerCircle.acc.y = 0;
+			let sign = (playerCircle.acc.x > 0) ? 1 : -1;
+			playerCircle.acc.x /= playerCircle.acc.x !== 0 ? (playerCircle.acc.x * sign) : 1;
+			playerCircle.acc.x *= ACC;
+		}else{
+			playerCircle.acc.y = ACC;
+		}
+	};
+};
 });
+
