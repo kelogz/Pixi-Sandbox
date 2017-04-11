@@ -1,34 +1,7 @@
-// // Require pixi module 
-// var pixi = require('pixi');
- 
-// // You can use either WebGLRenderer or CanvasRenderer 
-// var renderer = pixi.WebGLRenderer(800, 600);
-// document.body.appendChild(renderer.view);
- 
-// var stage = new pixi.Stage();
-// var bunnyTexture = pixi.Texture.fromImage("bunny.png");
-// var bunny = new pixi.Sprite(bunnyTexture);
- 
-// bunny.position.x = 400;
-// bunny.position.y = 300;
-// bunny.scale.x = 2;
-// bunny.scale.y = 2;
- 
-// stage.addChild(bunny);
- 
-// requestAnimationFrame(animate);
- 
-// function animate() {
-//     bunny.rotation += 0.01;
- 
-//     renderer.render(stage);
- 
-//     requestAnimationFrame(animate);
-// }
 const WIDTH = 800;
 const HEIGHT = 600;
 
-const ACC = 2;
+const ACC = 0.10;
 
 $(function(){
 	var app = new PIXI.Application(WIDTH, HEIGHT, { antialias: true });
@@ -46,7 +19,7 @@ $(function(){
 	playerCircle.y = HEIGHT / 2;
 	playerCircle.acc = { x: 0, y: 0};
 	playerCircle.vel = { x: 0, y: 0};
-	playerCircle.radius = 50;
+	playerCircle.radius = 10;
 
 	// Initial Player Rendering
 	playerCircle.beginFill(0xFF0000, 0.5);
@@ -77,8 +50,17 @@ $(function(){
 		down = keyboard(KEY_DOWN);
 
 	left.press = function(){
-		if(playerCircle.acc.y != 0){
-			let diag = Math.sqrt(ACC/2);
+		if(right.isDown){
+			playerCircle.acc.x = 0;
+			if(playerCircle.acc.y != 0){
+				let sign = playerCircle.acc.y > 0 ? 1 : -1;
+				playerCircle.acc.y /= playerCircle.acc.y * sign;
+				playerCircle.acc.y *= ACC;
+			}
+		}else if(playerCircle.acc.y != 0){
+			let diag = Math.sqrt(ACC * ACC /2);
+			let sign = (playerCircle.acc.y > 0) ? 1 : -1;
+			playerCircle.acc.y /= playerCircle.acc.y * sign;
 			playerCircle.acc.y *= diag;
 			playerCircle.acc.x = -diag;
 		}else{
@@ -86,8 +68,17 @@ $(function(){
 		}
 	};
 	right.press = function(){
-		if(playerCircle.acc.y != 0){
-			let diag = Math.sqrt(ACC/2);
+		if(left.isDown){
+			playerCircle.acc.x = 0;
+			if(playerCircle.acc.y != 0){
+				let sign = playerCircle.acc.y > 0 ? 1 : -1;
+				playerCircle.acc.y /= playerCircle.acc.y * sign;
+				playerCircle.acc.y *= ACC;
+			}
+		}else if(playerCircle.acc.y != 0){
+			let diag = Math.sqrt(ACC * ACC /2);
+			let sign = (playerCircle.acc.y > 0) ? 1 : -1;
+			playerCircle.acc.y /= playerCircle.acc.y * sign;
 			playerCircle.acc.y *= diag;
 			playerCircle.acc.x = diag;
 		}else{
@@ -95,8 +86,17 @@ $(function(){
 		}
 	};
 	up.press = function(){
-		if(playerCircle.acc.x != 0){
-			let diag = Math.sqrt(ACC/2);
+		if(down.isDown){
+			playerCircle.acc.y = 0;
+			if(playerCircle.acc.x != 0){
+				let sign = playerCircle.acc.x > 0 ? 1 : -1;
+				playerCircle.acc.x /= playerCircle.acc.x * sign;
+				playerCircle.acc.x *= ACC;
+			}
+		}else if(playerCircle.acc.x != 0){
+			let diag = Math.sqrt(ACC * ACC /2);
+			let sign = (playerCircle.acc.x > 0) ? 1 : -1;
+			playerCircle.acc.x /= playerCircle.acc.x * sign;
 			playerCircle.acc.x *= diag;
 			playerCircle.acc.y = -diag;
 		}else{
@@ -104,8 +104,17 @@ $(function(){
 		}
 	};
 	down.press = function(){
-		if(playerCircle.acc.x != 0){
-			let diag = Math.sqrt(ACC/2);
+		if(up.isDown){
+			playerCircle.acc.y = 0;
+			if(playerCircle.acc.x != 0){
+				let sign = playerCircle.acc.x > 0 ? 1 : -1;
+				playerCircle.acc.x /= playerCircle.acc.x * sign;
+				playerCircle.acc.x *= ACC;
+			}
+		}else if(playerCircle.acc.x != 0){
+			let diag = Math.sqrt(ACC * ACC /2);
+			let sign = (playerCircle.acc.x > 0) ? 1 : -1;
+			playerCircle.acc.x /= playerCircle.acc.x * sign;
 			playerCircle.acc.x *= diag;
 			playerCircle.acc.y = diag;
 		}else{
@@ -120,7 +129,8 @@ $(function(){
 			playerCircle.acc.y /= playerCircle.acc.y !== 0 ? (playerCircle.acc.y * sign) : 1;
 			playerCircle.acc.y *= ACC;
 		}else{
-			playerCircle.acc.x = -ACC;
+			playerCircle.acc.x = (playerCircle.acc.y === 0) ? ACC : Math.sqrt(ACC * ACC / 2);
+			playerCircle.acc.y = (playerCircle.acc.y === 0) ? 0 : (playerCircle.acc.y * Math.sqrt(ACC * ACC / 2)) / Math.abs(playerCircle.acc.y);
 		}
 	};
 	right.release = function(){
@@ -130,7 +140,8 @@ $(function(){
 			playerCircle.acc.y /= playerCircle.acc.y !== 0 ? (playerCircle.acc.y * sign) : 1;
 			playerCircle.acc.y *= ACC;
 		}else{
-			playerCircle.acc.x = ACC;
+			playerCircle.acc.x = (playerCircle.acc.y === 0) ? -ACC : -Math.sqrt(ACC * ACC / 2);
+			playerCircle.acc.y = (playerCircle.acc.y === 0) ? 0 : (playerCircle.acc.y * Math.sqrt(ACC * ACC / 2)) / Math.abs(playerCircle.acc.y);
 		}
 	};
 	up.release = function(){
@@ -140,7 +151,8 @@ $(function(){
 			playerCircle.acc.x /= playerCircle.acc.x !== 0 ? (playerCircle.acc.x * sign) : 1;
 			playerCircle.acc.x *= ACC;
 		}else{
-			playerCircle.acc.y = -ACC;
+			playerCircle.acc.y = (playerCircle.acc.x === 0) ? ACC : Math.sqrt(ACC * ACC / 2);
+			playerCircle.acc.x = (playerCircle.acc.x === 0) ? 0 : (playerCircle.acc.x * Math.sqrt(ACC * ACC / 2)) / Math.abs(playerCircle.acc.x);
 		}
 	};
 	down.release = function(){
@@ -150,7 +162,8 @@ $(function(){
 			playerCircle.acc.x /= playerCircle.acc.x !== 0 ? (playerCircle.acc.x * sign) : 1;
 			playerCircle.acc.x *= ACC;
 		}else{
-			playerCircle.acc.y = ACC;
+			playerCircle.acc.y = (playerCircle.acc.x === 0) ? -ACC : -Math.sqrt(ACC * ACC / 2);
+			playerCircle.acc.x = (playerCircle.acc.x === 0) ? 0 : (playerCircle.acc.x * Math.sqrt(ACC * ACC / 2)) / Math.abs(playerCircle.acc.x);
 		}
 	};
 };
